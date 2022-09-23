@@ -1,0 +1,126 @@
+#!/bin/bash
+#
+# Open a tunnel with a server through Azure Bastion
+
+# LIST OF AZURE TENANTS
+IIIM_tenant="iiimprod.onmicrosoft.com"
+IIIM_tenant_id="c612d8a1-ddb7-42f9-8fdd-81d605eac0fe"
+UNDP_tenant="iccundp.onmicrosoft.com"
+UNDP_tenant_id="8a28c155-4f07-42b5-ae59-e480499031dd"
+UNWOMEN_tenant="unwomen.onmicrosoft.com"
+UNWOMEN_tenant_id="2bcd0744-9e18-487d-85c3-c9a325220be8"
+
+current_tenant=$(az account tenant list 2>/dev/null |grep tenantId |cut -f4 -d \")
+
+case $current_tenant in
+  $IIIM_tenant_id)
+    current_tenant=1;
+    tenant_s="iiimprod" ;;
+  $UNDP_tenant_id)
+    curent_tenant=2;
+    tenant_s="iccundp" ;;
+  $UNWOMEN_tenant_id)
+    current_tenant=3;
+    tenant_s="unwomen" ;;
+  *)
+    current_tenant=0;
+    tenant_s="none" ;;
+esac
+
+tenant="$(dialog --backtitle "Azure Bastion tunnel connection" --title "Current Tenant: ${tenant_s}" --stdout --default-item 1 --menu "Select Tenant" 0 0 4 \
+  1 "IIIM" \
+  2 "UNDP" \
+  3 "UNWOMEN" \
+  4 "Skip")"
+
+case $tenant in
+  1)
+    az login --tenant $IIIM_tenant &>> ./.azure.log
+    az account set --subscription 'IIIM - Connectivity Hub' ;;
+  2)
+    az login --tenant $UNDP_tenant &>> ./.azure.log
+    az account set --subscription 'ICCUNDP - Production' ;;
+  3) 
+    az login --tenant $UNDP_tenant &>> ./.azure.log
+    az account set --subscription 'UNWOMEN - Production' ;;
+  4)
+    tenant=$current_tenant ;;
+esac
+
+if [[ $tenant == 1 ]] ; then
+  bastion="iiim-conn-dw-bastion"
+  rg="RG-IIIM-ConnHub-Datawalk"
+  resourceid_prod="/subscriptions/5a0a94a6-32a6-4e5e-a2b7-00b01946c7e6/resourceGroups/RG-IIIM-DATAWALK-PROD/providers/Microsoft.Compute/virtualMachines"
+  resourceid_test="/subscriptions/12fb1781-bbd5-463d-8f73-ba1751070a00/resourceGroups/RG-IIIM-DATAWALK-TEST/providers/Microsoft.Compute/virtualMachines"
+
+  environment="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Environment:" 0 0 5 \
+    1 "Production" \
+    2 "Test")"
+
+  if [[ $environment == 1 ]] ; then
+  
+    server="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Server:" 0 0 10 \
+      1 "iiim-dw-p-appsrv-01" \
+      2 "iiim-dw-p-appsrv-02" \
+      3 "iiim-dw-p-intsrv-01" \
+      4 "iiim-dw-p-intsrv-02" \
+      5 "iiim-dw-p-compsrv-01" \
+      6 "iiim-dw-p-compsrv-02" \
+      7 "iiim-dw-p-compsrv-03" \
+      8 "iiim-dw-p-content-backup" \
+      9 "iiim-dw-p-monsrv-01")"
+
+    case $server in
+      1)
+         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/iiim-dw-p-appsrv-01 --resource-port 22 --port 9001 ;;
+      2)
+         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/iiim-dw-p-appsrv-02 --resource-port 22 --port 9002 ;;
+      3)
+         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/iiim-dw-p-intsrv-01 --resource-port 22 --port 9003 ;;
+      4)
+         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/iiim-dw-p-intsrv-02 --resource-port 22 --port 9004 ;;
+      5)
+         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/iiim-dw-p-compsrv-01 --resource-port 22 --port 9005 ;;
+      6)
+         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/iiim-dw-p-compsrv-02 --resource-port 22 --port 9006 ;;
+      7)
+         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/iiim-dw-p-compsrv-03 --resource-port 22 --port 9007 ;;
+      8)
+         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/iiim-dw-p-content-backup --resource-port 22 --port 9008 ;;
+      9)
+         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/iiim-dw-p-monsrv-01 --resource-port 22 --port 9009 ;;
+    esac
+  fi
+
+  if [[ $environment == 2 ]] ; then
+
+   server="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Server:" 0 0 10 \
+     1 "iiim-dw-t-appsrv-01" \
+     2 "iiim-dw-t-appsrv-02" \
+     3 "iiim-dw-t-intsrv-01" \
+     4 "iiim-dw-t-intsrv-02" \
+     5 "iiim-dw-t-compsrv-01" \
+     6 "iiim-dw-t-compsrv-02" \
+     7 "iiim-dw-t-compsrv-03" \
+     8 "iiim-dw-t-content-backup")"
+
+    case $server in
+      1)
+         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/iiim-dw-t-appsrv-01 --resource-port 22 --port 9010 ;;
+      2)
+         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/iiim-dw-t-appsrv-02 --resource-port 22 --port 9011 ;;
+      3)
+         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/iiim-dw-t-intsrv-01 --resource-port 22 --port 9012 ;;
+      4)
+         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/iiim-dw-t-intsrv-02 --resource-port 22 --port 9013 ;;
+      5)
+         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/iiim-dw-t-compsrv-01 --resource-port 22 --port 9014 ;;
+      6)
+         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/iiim-dw-t-compsrv-02 --resource-port 22 --port 9015 ;;
+      7)
+         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/iiim-dw-t-compsrv-03 --resource-port 22 --port 9016 ;;
+      8)
+         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/iiim-dw-t-content-backup --resource-port 22 --port 9017 ;;
+    esac
+  fi
+fi
