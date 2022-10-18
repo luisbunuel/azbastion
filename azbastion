@@ -32,7 +32,7 @@ case $current_tenant in
     tenant_s="none" ;;
 esac
 
-tenant="$(dialog --backtitle "Azure Bastion tunnel connection" --title "Current Tenant: ${tenant_s}" --stdout --default-item 1 --menu "Select Tenant" 0 0 6 \
+tenant="$(dialog --colors --backtitle "Azure Bastion tunnel connection" --title "Current Tenant: \Zu\Z1${tenant_s}" --stdout --default-item 1 --menu "Select Tenant" 0 0 6 \
   1 "IIIM" \
   2 "IIMM" \
   3 "UNDP" \
