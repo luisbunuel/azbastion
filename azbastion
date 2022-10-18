@@ -32,7 +32,7 @@ case $current_tenant in
     tenant_s="none" ;;
 esac
 
-tenant="$(dialog --backtitle "Azure Bastion tunnel connection" --title "Current Tenant: ${tenant_s}" --stdout --default-item 1 --menu "Select Tenant" 0 0 4 \
+tenant="$(dialog --backtitle "Azure Bastion tunnel connection" --title "Current Tenant: ${tenant_s}" --stdout --default-item 1 --menu "Select Tenant" 0 0 6 \
   1 "IIIM" \
   2 "IIMM" \
   3 "UNDP" \
@@ -41,16 +41,16 @@ tenant="$(dialog --backtitle "Azure Bastion tunnel connection" --title "Current 
 
 case $tenant in
   1)
-    az login --tenant $IIIM_tenant &>> ./.azure.log
+    az login --tenant $IIIM_tenant &>> /tmp/azbastion_$USER.log
     az account set --subscription 'IIIM - Connectivity Hub' ;;
   2)
-    az login --tenant $IIMM_tenant &>> ./.azure.log
-    az account set --subscription 'IIIM - Connectivity Hub' ;;   
+    az login --tenant $IIMM_tenant &>> /tmp/azbastion_$USER.log
+    az account set --subscription 'IIMM - Connectivity Hub' ;;   
   3)
-    az login --tenant $UNDP_tenant &>> ./.azure.log
+    az login --tenant $UNDP_tenant &>> /tmp/azbastion_$USER.log
     az account set --subscription 'ICCUNDP - Production' ;;
   4) 
-    az login --tenant $UNWOMEN_tenant &>> ./.azure.log
+    az login --tenant $UNWOMEN_tenant &>> /tmp/azbastion_$USER.log
     az account set --subscription 'UNWOMEN - Production' ;;
   5)
     tenant=$current_tenant ;;
@@ -151,7 +151,7 @@ if [[ $tenant == 2 ]] ; then
       5 "iimm-dw-p-compsrv-01" \
       6 "iimm-dw-p-compsrv-02" \
       7 "iimm-dw-p-compsrv-03" \
-      9 "iimm-dw-p-monsrv-01")"
+      8 "iimm-dw-p-monsrv-01")"
 
     case $server in
       1)
