@@ -5,55 +5,84 @@
 # LIST OF AZURE TENANTS
 IIIM_tenant="iiimprod.onmicrosoft.com"
 IIIM_tenant_id="c612d8a1-ddb7-42f9-8fdd-81d605eac0fe"
+IIIM_config_dir="$HOME/.azure_IIIM"
 IIMM_tenant="mymeprod.onmicrosoft.com"
 IIMM_tenant_id="89622f4c-e07e-4290-a3e6-68bd9670b8ef"
+IIMM_config_dir="$HOME/.azure_IIMM"
 UNDP_tenant="iccundp.onmicrosoft.com"
 UNDP_tenant_id="8a28c155-4f07-42b5-ae59-e480499031dd"
+UNDP_config_dir="$HOME/.azure_UNDP"
 UNWOMEN_tenant="unwomen.onmicrosoft.com"
 UNWOMEN_tenant_id="2bcd0744-9e18-487d-85c3-c9a325220be8"
+UNWOMEN_config_dir="$HOME/.azure_WOMEN"
 
-current_tenant=$(az account tenant list 2>/dev/null |grep tenantId |cut -f4 -d \")
+export AZURE_CONFIG_DIR=$IIIM_config_dir
+if az account show &>/dev/null
+then
+   iiim="\Zu\Z1IIIM"
+else
+   iiim="IIIM"
+fi
 
-case $current_tenant in
-  $IIIM_tenant_id)
-    current_tenant=1;
-    tenant_s="IIIM" ;;
-  $IIMM_tenant_id)
-    current_tenant=2;
-    tenant_s="IIMM" ;;
-  $UNDP_tenant_id)
-    curent_tenant=3;
-    tenant_s="UNDP" ;;
-  $UNWOMEN_tenant_id)
-    current_tenant=4;
-    tenant_s="UNWOMEN" ;;
-  *)
-    current_tenant=0;
-    tenant_s="none" ;;
-esac
+export AZURE_CONFIG_DIR=$IIMM_config_dir
+if az account show &>/dev/null
+then
+   iimm="\Zu\Z1IIMM"
+else
+   iimm="IIMM"
+fi
 
-tenant="$(dialog --colors --backtitle "Azure Bastion tunnel connection" --title "Current Tenant: \Zu\Z1${tenant_s}" --stdout --default-item 1 --menu "Select Tenant" 0 0 6 \
-  1 "IIIM" \
-  2 "IIMM" \
-  3 "UNDP" \
-  4 "UNWOMEN" \
-  5 "Skip")"
+export AZURE_CONFIG_DIR=$UNDP_config_dir
+if az account show &>/dev/null
+then
+   undp="\Zu\Z1UNDP"
+else
+   undp="UNDP"
+fi
+
+export AZURE_CONFIG_DIR=$UNWOMEN_config_dir
+if az account show &>/dev/null
+then
+   unwomen="\Zu\Z1UNWOMEN"
+else
+   unwomen="UNWOMEN"
+fi
+
+tenant="$(dialog --colors --backtitle "Azure Bastion tunnel connection" --title "\Zb\Z0AZBASTION" --stdout --default-item 1 --menu "Select Tenant" 0 0 6 \
+  1 "$iiim" \
+  2 "$iimm" \
+  3 "$undp" \
+  4 "$unwomen")"
 
 case $tenant in
   1)
-    az login --tenant $IIIM_tenant &>> /tmp/azbastion_$USER.log
-    az account set --subscription 'IIIM - Connectivity Hub' ;;
+    export AZURE_CONFIG_DIR=$IIIM_config_dir
+    if ! az account show &>/dev/null
+    then
+      az login --tenant $IIIM_tenant &>> /tmp/azbastion_$USER.log
+      az account set --subscription 'IIIM - Connectivity Hub'
+    fi;;
   2)
-    az login --tenant $IIMM_tenant &>> /tmp/azbastion_$USER.log
-    az account set --subscription 'IIMM - Connectivity Hub' ;;   
+    export AZURE_CONFIG_DIR=$IIMM_config_dir
+    if ! az account show &>/dev/null
+    then
+      az login --tenant $IIMM_tenant &>> /tmp/azbastion_$USER.log
+      az account set --subscription 'IIMM - Connectivity Hub' 
+    fi;;
   3)
-    az login --tenant $UNDP_tenant &>> /tmp/azbastion_$USER.log
-    az account set --subscription 'ICCUNDP - Production' ;;
+    export AZURE_CONFIG_DIR=$UNDP_config_dir
+    if ! az account show &>/dev/null
+    then
+      az login --tenant $UNDP_tenant &>> /tmp/azbastion_$USER.log
+      az account set --subscription 'ICCUNDP - Production'
+    fi;;
   4) 
-    az login --tenant $UNWOMEN_tenant &>> /tmp/azbastion_$USER.log
-    az account set --subscription 'UNWOMEN - Production' ;;
-  5)
-    tenant=$current_tenant ;;
+    export AZURE_CONFIG_DIR=$UNWOMEN_config_dir
+    if ! az account show &>/dev/null
+    then
+      az login --tenant $UNWOMEN_tenant &>> /tmp/azbastion_$USER.log
+      az account set --subscription 'UNWOMEN - Production'
+    fi;;
 esac
 
 ################## IIIM MENU ##################
