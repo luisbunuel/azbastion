@@ -4,16 +4,12 @@
 
 # LIST OF AZURE TENANTS
 IIIM_tenant="iiimprod.onmicrosoft.com"
-IIIM_tenant_id="c612d8a1-ddb7-42f9-8fdd-81d605eac0fe"
 IIIM_config_dir="$HOME/.azure_IIIM"
 IIMM_tenant="mymeprod.onmicrosoft.com"
-IIMM_tenant_id="89622f4c-e07e-4290-a3e6-68bd9670b8ef"
 IIMM_config_dir="$HOME/.azure_IIMM"
 UNDP_tenant="iccundp.onmicrosoft.com"
-UNDP_tenant_id="8a28c155-4f07-42b5-ae59-e480499031dd"
 UNDP_config_dir="$HOME/.azure_UNDP"
 UNWOMEN_tenant="unwomen.onmicrosoft.com"
-UNWOMEN_tenant_id="2bcd0744-9e18-487d-85c3-c9a325220be8"
 UNWOMEN_config_dir="$HOME/.azure_WOMEN"
 
 export AZURE_CONFIG_DIR=$IIIM_config_dir
@@ -228,6 +224,48 @@ if [[ $tenant == 2 ]] ; then
          az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/iimm-dw-t-compsrv-02 --resource-port 22 --port 9029 ;;
       7)
          az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/iimm-dw-t-compsrv-03 --resource-port 22 --port 9030 ;;
+    esac
+  fi
+fi
+###############################################
+
+
+################## UNDP MENU ##################
+if [[ $tenant == 3 ]] ; then
+  bastion="UNDP-PRD-AZRWEU-BASTION-VNET-01"
+  rg="UNDP-PRD-AZRWEU-HUB"
+  resourceid_prod="/subscriptions/e9d86b44-b795-49db-a164-52dd079ea32e/resourceGroups/UNDP-AZRWEU-LEGACY-PRODUCTION/providers/Microsoft.Compute/virtualMachines"
+  resourceid_test="/subscriptions/e9d86b44-b795-49db-a164-52dd079ea32e/resourceGroups/UNDP-AZRWEU-LEGACY-NONPRODUCTION/providers/Microsoft.Compute/virtualMachines"
+
+  environment="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Environment:" 0 0 5 \
+    1 "Production" \
+    2 "Test")"
+
+  if [[ $environment == 1 ]] ; then
+
+    server="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Server:" 0 0 10 \
+      1 "DPLPRODCF02" \
+      2 "DPSPRODCF02" \
+      3 "DPWEBFS02")"
+
+    case $server in
+      1)
+         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/DPLPRODCF02 --resource-port 22 --port 9031 ;;
+      2)
+         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/DPSPRODCF02 --resource-port 22 --port 9032 ;;
+      3)
+         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/DPWEBFS02 --resource-port 22 --port 9033 ;;
+    esac
+  fi
+
+  if [[ $environment == 2 ]] ; then
+
+   server="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Server:" 0 0 10 \
+     1 "DPLNONPRODCF02")"
+
+    case $server in
+      1)
+         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/DPLNONPRODCF02 --resource-port 22 --port 9034 ;;
     esac
   fi
 fi
