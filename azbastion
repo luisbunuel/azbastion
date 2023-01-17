@@ -246,8 +246,8 @@ if [[ $tenant == 3 ]] ; then
     server="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Server:" 0 0 10 \
       1 "DPLPRODCF02" \
       2 "DPSPRODCF02" \
-      3 "DPLPRODCFSM02" \
-      4 "DPWEBFS02")"
+      3 "DPWEBFS02" \
+      4 "DPLPRODCFSM02")"
 
     case $server in
       1)
@@ -255,9 +255,9 @@ if [[ $tenant == 3 ]] ; then
       2)
          az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/DPSPRODCF02 --resource-port 22 --port 9032 ;;
       3)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/DPLPRODCFSM02 --resource-port 22 --port 9033 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/DPWEBFS02 --resource-port 22 --port 9033 ;;
       4)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/DPWEBFS02 --resource-port 22 --port 9034 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/DPLPRODCFSM02 --resource-port 22 --port 9034 ;;
     esac
   fi
 
@@ -268,7 +268,7 @@ if [[ $tenant == 3 ]] ; then
 
     case $server in
       1)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/DPLNONPRODCF02 --resource-port 22 --port 9034 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/DPLNONPRODCF02 --resource-port 22 --port 9035 ;;
     esac
   fi
 fi
