@@ -56,29 +56,29 @@ case $tenant in
     if ! az account show &>/dev/null
     then
       az login --tenant $IIIM_tenant &>> /tmp/azbastion_$USER.log
-      az account set --subscription 'IIIM - Connectivity Hub'
-    fi;;
+    fi
+    az account set --subscription 'IIIM - Connectivity Hub';;
   2)
     export AZURE_CONFIG_DIR=$IIMM_config_dir
     if ! az account show &>/dev/null
     then
       az login --tenant $IIMM_tenant &>> /tmp/azbastion_$USER.log
-      az account set --subscription 'IIMM - Connectivity Hub' 
-    fi;;
+    fi
+    az account set --subscription 'IIMM - Connectivity Hub' ;;
   3)
     export AZURE_CONFIG_DIR=$UNDP_config_dir
     if ! az account show &>/dev/null
     then
       az login --tenant $UNDP_tenant &>> /tmp/azbastion_$USER.log
-      az account set --subscription 'ICCUNDP - Production'
-    fi;;
+    fi
+    az account set --subscription 'ICCUNDP - Production';;
   4) 
     export AZURE_CONFIG_DIR=$UNWOMEN_config_dir
     if ! az account show &>/dev/null
     then
-      az login --tenant $UNWOMEN_tenant &>> /tmp/azbastion_$USER.log
-      az account set --subscription 'UNWOMEN - Production'
-    fi;;
+      az login --tenant $UNWOMEN_tenant &>> /tmp/azbastion_$USER.log  
+    fi
+    az account set --subscription 'UNWOMEN - Production';;
 esac
 
 ################## IIIM MENU ##################
