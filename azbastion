@@ -13,32 +13,28 @@ UNWOMEN_tenant="unwomen.onmicrosoft.com"
 UNWOMEN_config_dir="$HOME/.azure_WOMEN"
 
 export AZURE_CONFIG_DIR=$IIIM_config_dir
-if az account show &>/dev/null
-then
+if az account get-access-token &>/dev/null; then
    iiim="\Zu\Z1IIIM"
 else
    iiim="IIIM"
 fi
 
 export AZURE_CONFIG_DIR=$IIMM_config_dir
-if az account show &>/dev/null
-then
+if az account get-access-token &>/dev/null; then
    iimm="\Zu\Z1IIMM"
 else
    iimm="IIMM"
 fi
 
 export AZURE_CONFIG_DIR=$UNDP_config_dir
-if az account show &>/dev/null
-then
+if az account get-access-token &>/dev/null; then
    undp="\Zu\Z1UNDP"
 else
    undp="UNDP"
 fi
 
 export AZURE_CONFIG_DIR=$UNWOMEN_config_dir
-if az account show &>/dev/null
-then
+if az account get-access-token &>/dev/null; then
    unwomen="\Zu\Z1UNWOMEN"
 else
    unwomen="UNWOMEN"
@@ -53,29 +49,25 @@ tenant="$(dialog --colors --backtitle "Azure Bastion tunnel connection" --title 
 case $tenant in
   1)
     export AZURE_CONFIG_DIR=$IIIM_config_dir
-    if ! az account show &>/dev/null
-    then
+    if ! az account get-access-token &>/dev/null; then
       az login --tenant $IIIM_tenant &>> /tmp/azbastion_$USER.log
     fi
     az account set --subscription 'IIIM - Connectivity Hub';;
   2)
     export AZURE_CONFIG_DIR=$IIMM_config_dir
-    if ! az account show &>/dev/null
-    then
+    if ! az account get-access-token &>/dev/null; then
       az login --tenant $IIMM_tenant &>> /tmp/azbastion_$USER.log
     fi
     az account set --subscription 'IIMM - Connectivity Hub' ;;
   3)
     export AZURE_CONFIG_DIR=$UNDP_config_dir
-    if ! az account show &>/dev/null
-    then
+    if ! az account get-access-token &>/dev/null; then
       az login --tenant $UNDP_tenant &>> /tmp/azbastion_$USER.log
     fi
     az account set --subscription 'ICCUNDP - Production';;
   4) 
     export AZURE_CONFIG_DIR=$UNWOMEN_config_dir
-    if ! az account show &>/dev/null
-    then
+    if ! az account get-access-token &>/dev/null; then
       az login --tenant $UNWOMEN_tenant &>> /tmp/azbastion_$USER.log  
     fi
     az account set --subscription 'UNWOMEN - Production';;
