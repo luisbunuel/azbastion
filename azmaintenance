@@ -10,8 +10,6 @@ me=`basename "$0"`
 start_date=`date -u +"%Y-%m-%d %H:%M:%S"`
 finish_date=`date -d "+1 hour" -u +"%Y-%m-%d %H:%M:%S"`
 
-az extension add --name alertsmanagement &>/dev/null
-
 help() {
 	echo
 	echo "Syntax:"
@@ -79,12 +77,14 @@ fi
 case $organization in
 	IIIM)
 		export AZURE_CONFIG_DIR=~/.azure_IIIM
+		az config set extension.use_dynamic_install=yes_without_prompt &>/dev/null
 		resource_group="RG-IIIM-cloudops"
 		scope="/subscriptions/5638ba20-5e01-4f95-ac49-a4c1f1f2af66/resourceGroups/RG-IIIM-cloudops"
 		org="iiim"
 		;;
 	IIMM)
 		export AZURE_CONFIG_DIR=~/.azure_IIMM
+		az config set extension.use_dynamic_install=yes_without_prompt &>/dev/null
 		resource_group="RG-IIMM-cloudops"
 		scope="/subscriptions/17e000ff-d917-43d8-9d1a-eaf799757636/resourceGroups/RG-IIMM-cloudops"
 		org="iimm"
@@ -116,10 +116,9 @@ esac
 case $action in
 	enable)
 		if ! az account get-access-token &>/dev/null; then
-			az login
+			az login &>/dev/null
 		fi
 
-		# change to Management subscription
 		az account set -s "$organization - Shared Management"
 
 		echo
@@ -155,7 +154,7 @@ case $action in
 
 	disable)
 		if ! az account get-access-token &>/dev/null ; then
-    		az login
+    		az login &>/dev/null
 		fi
 
 		az account set -s "$organization - Shared Management"
