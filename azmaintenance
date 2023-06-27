@@ -10,6 +10,8 @@ me=`basename "$0"`
 start_date=`date -u +"%Y-%m-%d %H:%M:%S"`
 finish_date=`date -d "+1 hour" -u +"%Y-%m-%d %H:%M:%S"`
 
+az extension add --name alertsmanagement &>/dev/null
+
 help() {
 	echo
 	echo "Syntax:"
@@ -113,6 +115,13 @@ esac
 
 case $action in
 	enable)
+		if ! az account get-access-token &>/dev/null; then
+			az login
+		fi
+
+		# change to Management subscription
+		az account set -s "$organization - Shared Management"
+
 		echo
 		echo "Enabling $organization servers maintenance"
 		echo
@@ -132,14 +141,6 @@ case $action in
 
 		echo
 		echo 
-
-		# check whether im logged or not
-		if ! az account get-access-token &>/dev/null; then
-			az login
-		fi
-
-		# change to Management subscription
-		az account set -s "$organization - Shared Management"
 
 		for server in ${servers[@]}
 		do
