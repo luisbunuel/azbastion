@@ -1,0 +1,195 @@
+#!/bin/bash
+#
+# Enable or Disable the maintenance mode on Azure servers
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+rule="RemoveAllActionGroups"
+me=`basename "$0"`
+start_date=`date -u +"%Y-%m-%d %H:%M:%S"`
+finish_date=`date -d "+1 hour" -u +"%Y-%m-%d %H:%M:%S"`
+
+help() {
+	echo
+	echo "Syntax:"
+	echo
+	echo "    $me -o organization -e environment -a action [-s start_date] [-f finish_date] [-d description]"
+	echo
+	echo "Options:"
+	echo
+	echo "    -o   Enter the organizatino IIIM|IIMM"
+	echo
+	echo "    -e   Enter the environment prod|test"
+	echo
+	echo "    -a   Enter the action enable|disable"
+	echo
+	echo -e "    -s   Enter the start date of the maintenance \033[33;5mUSE UTC!\033[0m"
+	echo "          Default: Current date"
+	echo
+	echo -e "    -f   Enter the finish date of the maintenance \033[33;5mUSE UTC!\033[0m"
+	echo "          Default: Current date + 1 hour"
+	echo
+	echo "    -d   Enter a description of the maintenance"
+	echo
+	echo "Examples:"
+	echo 
+	echo "	$me -o IIIM -e prod -a enable -s \"$start_date\" -f \"$finish_date\" -d \"Monthly patching\" "
+	echo "	$me -o IIMM -e test -a disable"
+	echo
+}
+
+if [ $# -eq 0 ]; then
+	help
+	exit 1
+fi
+
+while getopts o:e:a:s:f:d: flag
+do
+    case "${flag}" in
+		o) organization=${OPTARG};;
+	    e) environment=${OPTARG};;
+		a) action=${OPTARG};;
+        s) start_date=${OPTARG};;
+        f) finish_date=${OPTARG};;
+        d) description=${OPTARG};;
+    esac
+done
+
+if [ -z "$organization" ]; then
+	echo
+	echo "Please enter the organization, -o [IIIM|IIMM]"
+	exit 1
+fi
+
+if [ -z "$environment" ]; then
+	echo 
+	echo "The environment can't be empty, enter -e [prod|test]"
+	exit 1
+fi
+
+if [ -z "$action" ]; then
+	echo
+	echo "Specify the action to take, enter -a [enable|disable]"
+	exit 1
+fi
+
+case $organization in
+	IIIM)
+		export AZURE_CONFIG_DIR=~/.azure_IIIM
+		resource_group="RG-IIIM-cloudops"
+		scope="/subscriptions/5638ba20-5e01-4f95-ac49-a4c1f1f2af66/resourceGroups/RG-IIIM-cloudops"
+		org="iiim"
+		;;
+	IIMM)
+		export AZURE_CONFIG_DIR=~/.azure_IIMM
+		resource_group="RG-IIMM-cloudops"
+		scope="/subscriptions/17e000ff-d917-43d8-9d1a-eaf799757636/resourceGroups/RG-IIMM-cloudops"
+		org="iimm"
+		;;
+	*)
+		echo
+		echo "Enter a valid organization: IIIM or IIMM"
+		exit 1
+		;;
+esac
+
+case $environment in
+	prod)
+		env="p"
+		servers=($org-dw-$env-appsrv-01 $org-dw-$env-appsrv-02 $org-dw-$env-compsrv-01 $org-dw-$env-compsrv-02 $org-dw-$env-compsrv-03 $org-dw-$env-intsrv-01 $org-dw-$env-intsrv-02)
+		servers=("${servers[@]}" $org-dw-p-monsrv-01)
+		;;
+	test)
+		env="t"
+		servers=($org-dw-$env-appsrv-01 $org-dw-$env-appsrv-02 $org-dw-$env-compsrv-01 $org-dw-$env-compsrv-02 $org-dw-$env-compsrv-03 $org-dw-$env-intsrv-01 $org-dw-$env-intsrv-02)
+		;;
+	*)
+		echo 
+		echo "Enter a valid environment name: prod or test"
+		exit 1
+		;;
+esac
+
+case $action in
+	enable)
+		echo
+		echo "Enabling $organization servers maintenance"
+		echo
+		echo "	Environment: $environment";
+		echo "	Start date: $start_date";
+		echo "	Finish date: $finish_date";
+		echo "	Description: $description";
+		echo
+		echo "You have 10 seconds to cancel this operation ..."
+
+		secs=10
+		while [ $secs -gt 0 ]; do
+			echo -ne "$secs\033[0K\r"
+			sleep 1
+			: $((secs--))
+		done
+
+		echo
+		echo 
+
+		# check whether im logged or not
+		if ! az account get-access-token &>/dev/null; then
+			az login
+		fi
+
+		# change to Management subscription
+		az account set -s "$organization - Shared Management"
+
+		for server in ${servers[@]}
+		do
+			az monitor alert-processing-rule create --enabled true --name "$server - Server Maintenance Mode" --description "$description" --resource-group $resource_group --scope $scope --filter-alert-context Contains $server --rule-type $rule --schedule-start-datetime "$start_date" --schedule-end-datetime "$finish_date" &>/dev/null
+			if [ $? == 0 ]; then
+				echo -e "$server: ${GREEN}Success${NC}"
+			else
+				echo -e "$server: ${RED}Error${NC}"
+			fi
+		done
+		;;
+
+	disable)
+		if ! az account get-access-token &>/dev/null ; then
+    		az login
+		fi
+
+		az account set -s "$organization - Shared Management"
+		
+		echo
+        echo "Disabling $organization servers maintenance ..."
+        echo
+        echo "You have 10 seconds to cancel this operation ..."
+
+        secs=10
+        while [ $secs -gt 0 ]; do
+            echo -ne "$secs\033[0K\r"
+            sleep 1
+            : $((secs--))
+        done
+
+        echo
+        echo
+
+        for server in ${servers[@]}
+        do
+			az monitor alert-processing-rule update --resource-group "RG-$organization-cloudops" --name "$server - Server Maintenance Mode" --enabled false &>/dev/null
+
+            if [ $? == 0 ]; then
+                echo -e "$server: ${GREEN}Success${NC}"
+            else
+                echo -e "$server: ${RED}Error${NC}"
+            fi
+
+        done
+		;;
+
+	*)
+		echo
+        echo "Enter a valid action: enable or disable"
+        exit 1
+        ;;
+esac
