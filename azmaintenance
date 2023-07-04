@@ -25,11 +25,11 @@ help() {
 	echo "    -a   Enter the action enable|disable"
 	echo
 	echo -e "    -s   Enter the start date of the maintenance \033[33;5mUSE UTC!\033[0m"
-	echo "           Format: \"yy-mm-dd hh:mm:ss\""
+	echo "           Format: \"yyyy-mm-dd hh:mm:ss\""
 	echo "           Default: Current date"
 	echo
 	echo -e "    -f   Enter the finish date of the maintenance \033[33;5mUSE UTC!\033[0m"
-	echo "           Format: \"yy-mm-dd hh:mm:ss\""
+	echo "           Format: \"yyyy-mm-dd hh:mm:ss\""
 	echo "           Default: Start date + 1 hour"
 	echo
 	echo "    -d   Enter a description of the maintenance"
