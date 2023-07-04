@@ -8,7 +8,7 @@ NC='\033[0m'
 rule="RemoveAllActionGroups"
 me=`basename "$0"`
 start_date=`date -u +"%Y-%m-%d %H:%M:%S"`
-finish_date=`date -d "+1 hour" -u +"%Y-%m-%d %H:%M:%S"`
+temp_finish_date=`date -u -d "+1 hour" +"%Y-%m-%d %H:%M:%S"`
 
 help() {
 	echo
@@ -25,16 +25,19 @@ help() {
 	echo "    -a   Enter the action enable|disable"
 	echo
 	echo -e "    -s   Enter the start date of the maintenance \033[33;5mUSE UTC!\033[0m"
-	echo "          Default: Current date"
+	echo "           Format: \"yy-mm-dd hh:mm:ss\""
+	echo "           Default: Current date"
 	echo
 	echo -e "    -f   Enter the finish date of the maintenance \033[33;5mUSE UTC!\033[0m"
-	echo "          Default: Current date + 1 hour"
+	echo "           Format: \"yy-mm-dd hh:mm:ss\""
+	echo "           Default: Start date + 1 hour"
 	echo
 	echo "    -d   Enter a description of the maintenance"
+	echo "           Default: empty" 
 	echo
 	echo "Examples:"
 	echo 
-	echo "	$me -o IIIM -e prod -a enable -s \"$start_date\" -f \"$finish_date\" -d \"Monthly patching\" "
+	echo "	$me -o IIIM -e prod -a enable -s \"$start_date\" -f \"$temp_finish_date\" -d \"Monthly patching\" "
 	echo "	$me -o IIMM -e test -a disable"
 	echo
 }
@@ -72,6 +75,10 @@ if [ -z "$action" ]; then
 	echo
 	echo "Specify the action to take, enter -a [enable|disable]"
 	exit 1
+fi
+
+if [ -z "$finish_date" ]; then
+	finish_date=`date -d "$start_date +hour" +"%Y-%m-%d %H:%M:%S"`
 fi
 
 case $organization in
@@ -125,8 +132,8 @@ case $action in
 		echo "Enabling $organization servers maintenance"
 		echo
 		echo "	Environment: $environment";
-		echo "	Start date: $start_date";
-		echo "	Finish date: $finish_date";
+		echo "	Start date: $start_date" UTC;
+		echo "	Finish date: $finish_date" UTC;
 		echo "	Description: $description";
 		echo
 		echo "You have 10 seconds to cancel this operation ..."
