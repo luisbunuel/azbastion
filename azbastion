@@ -102,21 +102,21 @@ if [[ $tenant == 1 ]] ; then
 
     case $server in
       1)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/iiim-dw-p-appsrv-01 --resource-port 22 --port 9001 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.62.4 --resource-port 22 --port 9001 ;;
       2)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/iiim-dw-p-appsrv-02 --resource-port 22 --port 9002 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.62.5 --resource-port 22 --port 9002 ;;
       3)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/iiim-dw-p-intsrv-01 --resource-port 22 --port 9003 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.62.36 --resource-port 22 --port 9003 ;;
       4)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/iiim-dw-p-intsrv-02 --resource-port 22 --port 9004 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.62.37 --resource-port 22 --port 9004 ;;
       5)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/iiim-dw-p-compsrv-01 --resource-port 22 --port 9005 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.62.68 --resource-port 22 --port 9005 ;;
       6)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/iiim-dw-p-compsrv-02 --resource-port 22 --port 9006 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.62.69 --resource-port 22 --port 9006 ;;
       7)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/iiim-dw-p-compsrv-03 --resource-port 22 --port 9007 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.62.70 --resource-port 22 --port 9007 ;;
       8)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/iiim-dw-p-monsrv-01 --resource-port 22 --port 9008 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.62.38 --resource-port 22 --port 9008 ;;
     esac
   fi
 
@@ -133,19 +133,19 @@ if [[ $tenant == 1 ]] ; then
 
     case $server in
       1)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/iiim-dw-t-appsrv-01 --resource-port 22 --port 9009 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.61.4 --resource-port 22 --port 9009 ;;
       2)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/iiim-dw-t-appsrv-02 --resource-port 22 --port 9010 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.61.5 --resource-port 22 --port 9010 ;;
       3)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/iiim-dw-t-intsrv-01 --resource-port 22 --port 9011 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.61.36 --resource-port 22 --port 9011 ;;
       4)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/iiim-dw-t-intsrv-02 --resource-port 22 --port 9012 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.61.37 --resource-port 22 --port 9012 ;;
       5)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/iiim-dw-t-compsrv-01 --resource-port 22 --port 9013 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.61.68 --resource-port 22 --port 9013 ;;
       6)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/iiim-dw-t-compsrv-02 --resource-port 22 --port 9014 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.61.69 --resource-port 22 --port 9014 ;;
       7)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/iiim-dw-t-compsrv-03 --resource-port 22 --port 9015 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.61.70 --resource-port 22 --port 9015 ;;
     esac
   fi
 fi
@@ -155,8 +155,6 @@ fi
 if [[ $tenant == 2 ]] ; then
   bastion="iimm-conn-dw-bastion"
   rg="RG-IIMM-ConnHub-Datawalk"
-  resourceid_prod="/subscriptions/86dd7a2c-aa7c-4fb2-a3c4-4bdbecf7d9cf/resourceGroups/RG-IIMM-DATAWALK-PROD/providers/Microsoft.Compute/virtualMachines"
-  resourceid_test="/subscriptions/22ac1dc2-5e93-444c-9b45-80da2ea18872/resourceGroups/RG-IIMM-DATAWALK-TEST/providers/Microsoft.Compute/virtualMachines"
 
   environment="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Environment:" 0 0 5 \
     1 "Production" \
@@ -176,21 +174,21 @@ if [[ $tenant == 2 ]] ; then
 
     case $server in
       1)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/iimm-dw-p-appsrv-01 --resource-port 22 --port 9016 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.65.4 --resource-port 22 --port 9016 ;;
       2)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/iimm-dw-p-appsrv-02 --resource-port 22 --port 9017 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.65.5 --resource-port 22 --port 9017 ;;
       3)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/iimm-dw-p-intsrv-01 --resource-port 22 --port 9018 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.65.36 --resource-port 22 --port 9018 ;;
       4)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/iimm-dw-p-intsrv-02 --resource-port 22 --port 9019 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.65.37 --resource-port 22 --port 9019 ;;
       5)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/iimm-dw-p-compsrv-01 --resource-port 22 --port 9020 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.65.68 --resource-port 22 --port 9020 ;;
       6)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/iimm-dw-p-compsrv-02 --resource-port 22 --port 9021 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.65.69 --resource-port 22 --port 9021 ;;
       7)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/iimm-dw-p-compsrv-03 --resource-port 22 --port 9022 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.65.70 --resource-port 22 --port 9022 ;;
       8)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/iimm-dw-p-monsrv-01 --resource-port 22 --port 9023 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.65.38 --resource-port 22 --port 9023 ;;
     esac
   fi
 
@@ -207,19 +205,19 @@ if [[ $tenant == 2 ]] ; then
 
     case $server in
       1)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/iimm-dw-t-appsrv-01 --resource-port 22 --port 9024 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.64.4 --resource-port 22 --port 9024 ;;
       2)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/iimm-dw-t-appsrv-02 --resource-port 22 --port 9025 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.64.5 --resource-port 22 --port 9025 ;;
       3)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/iimm-dw-t-intsrv-01 --resource-port 22 --port 9026 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.64.36 --resource-port 22 --port 9026 ;;
       4)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/iimm-dw-t-intsrv-02 --resource-port 22 --port 9027 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.64.37 --resource-port 22 --port 9027 ;;
       5)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/iimm-dw-t-compsrv-01 --resource-port 22 --port 9028 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.64.69 --resource-port 22 --port 9028 ;;
       6)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/iimm-dw-t-compsrv-02 --resource-port 22 --port 9029 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.64.70 --resource-port 22 --port 9029 ;;
       7)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/iimm-dw-t-compsrv-03 --resource-port 22 --port 9030 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.64.71 --resource-port 22 --port 9030 ;;
     esac
   fi
 fi
@@ -230,8 +228,6 @@ fi
 if [[ $tenant == 3 ]] ; then
   bastion="UNDP-PRD-AZRWEU-BASTION-VNET-01"
   rg="UNDP-PRD-AZRWEU-HUB"
-  resourceid_prod="/subscriptions/e9d86b44-b795-49db-a164-52dd079ea32e/resourceGroups/UNDP-AZRWEU-LEGACY-PRODUCTION/providers/Microsoft.Compute/virtualMachines"
-  resourceid_test="/subscriptions/e9d86b44-b795-49db-a164-52dd079ea32e/resourceGroups/UNDP-AZRWEU-LEGACY-NONPRODUCTION/providers/Microsoft.Compute/virtualMachines"
 
   environment="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Environment:" 0 0 5 \
     1 "Production" \
@@ -241,13 +237,16 @@ if [[ $tenant == 3 ]] ; then
 
     server="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Server:" 0 0 10 \
       1 "DPLPRODCF02" \
-      2 "DPSPRODCF02")"
+      2 "DPSPRODCF02" \
+	  3 "dplprodexcf01")"
 
     case $server in
       1)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/DPLPRODCF02 --resource-port 22 --port 9031 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.1.46 --resource-port 22 --port 9031 ;;
       2)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_prod/DPSPRODCF02 --resource-port 22 --port 9032 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.1.47 --resource-port 22 --port 9032 ;;
+      3) 
+	     az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.1.29 --resource-port 22 --port 9033 ;;
     esac
   fi
 
@@ -258,7 +257,7 @@ if [[ $tenant == 3 ]] ; then
 
     case $server in
       1)
-         az network bastion tunnel --name $bastion --resource-group $rg --target-resource-id $resourceid_test/DPLNONPRODCF02 --resource-port 22 --port 9035 ;;
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.1.42 --resource-port 22 --port 9035 ;;
     esac
   fi
 fi
