@@ -237,16 +237,13 @@ if [[ $tenant == 3 ]] ; then
 
     server="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Server:" 0 0 10 \
       1 "DPLPRODCF02" \
-      2 "DPSPRODCF02" \
-	  3 "dplprodexcf01")"
+      2 "DPSPRODCF02")"
 
     case $server in
       1)
          az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.1.46 --resource-port 22 --port 9031 ;;
       2)
          az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.1.47 --resource-port 22 --port 9032 ;;
-      3) 
-	     az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.1.29 --resource-port 22 --port 9033 ;;
     esac
   fi
 
