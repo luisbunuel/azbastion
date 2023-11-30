@@ -223,7 +223,6 @@ if [[ $tenant == 2 ]] ; then
 fi
 ###############################################
 
-
 ################## UNDP MENU ##################
 if [[ $tenant == 3 ]] ; then
   bastion="UNDP-PRD-AZRWEU-BASTION-VNET-01"
