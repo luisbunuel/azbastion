@@ -9,6 +9,8 @@ IIMM_tenant="mymeprod.onmicrosoft.com"
 IIMM_config_dir="$HOME/.azure_IIMM"
 UNDP_tenant="iccundp.onmicrosoft.com"
 UNDP_config_dir="$HOME/.azure_UNDP"
+UNDPBIO_tenant="iccundp.onmicrosoft.com"
+UNDPBIO_config_dir="$HOME/.azure_UNDPBIO"
 UNWOMEN_tenant="unwomen.onmicrosoft.com"
 UNWOMEN_config_dir="$HOME/.azure_WOMEN"
 
@@ -33,6 +35,13 @@ else
    undp="UNDP"
 fi
 
+export AZURE_CONFIG_DIR=$UNDPBIO_config_dir
+if az account get-access-token &>/dev/null; then
+   undpbio="\Zu\Z1UNDPBIO"
+else
+   undpbio="UNDPBIO"
+fi
+
 export AZURE_CONFIG_DIR=$UNWOMEN_config_dir
 if az account get-access-token &>/dev/null; then
    unwomen="\Zu\Z1UNWOMEN"
@@ -44,37 +53,46 @@ tenant="$(dialog --colors --backtitle "Azure Bastion tunnel connection" --title 
   1 "$iiim" \
   2 "$iimm" \
   3 "$undp" \
-  4 "$unwomen")"
+  4 "$unwomen" \
+  5 "$undpbio" )"
 
 case $tenant in
   1)
     export AZURE_CONFIG_DIR=$IIIM_config_dir
-	az config set extension.use_dynamic_install=yes_without_prompt &>/dev/null
+   az config set extension.use_dynamic_install=yes_without_prompt &>/dev/null
     if ! az account get-access-token &>/dev/null; then
       az login --tenant $IIIM_tenant &>> /tmp/azbastion_$USER.log
     fi
     az account set --subscription 'IIIM - Connectivity Hub';;
   2)
     export AZURE_CONFIG_DIR=$IIMM_config_dir
-	az config set extension.use_dynamic_install=yes_without_prompt &>/dev/null
+   az config set extension.use_dynamic_install=yes_without_prompt &>/dev/null
     if ! az account get-access-token &>/dev/null; then
       az login --tenant $IIMM_tenant &>> /tmp/azbastion_$USER.log
     fi
     az account set --subscription 'IIMM - Connectivity Hub' ;;
   3)
     export AZURE_CONFIG_DIR=$UNDP_config_dir
-	az config set extension.use_dynamic_install=yes_without_prompt &>/dev/null
+   az config set extension.use_dynamic_install=yes_without_prompt &>/dev/null
     if ! az account get-access-token &>/dev/null; then
       az login --tenant $UNDP_tenant &>> /tmp/azbastion_$USER.log
     fi
     az account set --subscription 'ICCUNDP - Production';;
   4) 
     export AZURE_CONFIG_DIR=$UNWOMEN_config_dir
-	az config set extension.use_dynamic_install=yes_without_prompt &>/dev/null
+   az config set extension.use_dynamic_install=yes_without_prompt &>/dev/null
     if ! az account get-access-token &>/dev/null; then
       az login --tenant $UNWOMEN_tenant &>> /tmp/azbastion_$USER.log  
     fi
     az account set --subscription 'UNWOMEN - Production';;
+  5)
+    export AZURE_CONFIG_DIR=$UNDPBIO_config_dir
+        az config set extension.use_dynamic_install=yes_without_prompt &>/dev/null
+    if ! az account get-access-token &>/dev/null; then
+      az login --tenant $UNDPBIO_tenant &>> /tmp/azbastion_$USER.log
+    fi
+    az account set --subscription 'UNDP - UN Biodiversity Lab Hosting - ELSA';;
+
 esac
 
 ################## IIIM MENU ##################
@@ -254,6 +272,27 @@ if [[ $tenant == 3 ]] ; then
     case $server in
       1)
          az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.1.42 --resource-port 22 --port 9035 ;;
+    esac
+  fi
+fi
+###############################################
+
+################## UNDP BIO ##################
+if [[ $tenant == 5 ]] ; then
+  bastion="undp-elsa-bastion"
+  rg="RG-undp-elsa-prod"
+
+  environment="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Environment:" 0 0 5 \
+    1 "Production")"
+
+  if [[ $environment == 1 ]] ; then
+
+    server="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Server:" 0 0 10 \
+      1 "undpbio")"
+
+    case $server in
+      1)
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address  10.88.2.68  --resource-port 22 --port 9036 ;;
     esac
   fi
 fi
