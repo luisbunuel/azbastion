@@ -1,6 +1,7 @@
 #!/bin/bash
 #
 # Open a tunnel with a server through Azure Bastion
+# https://github.com/luisbunuel/aztools
 
 # LIST OF AZURE TENANTS
 IIIM_tenant="iiimprod.onmicrosoft.com"
