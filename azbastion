@@ -29,18 +29,18 @@ else
    undp="UNDP"
 fi
 
-export AZURE_CONFIG_DIR=$UNDPBIO_config_dir
-if az account get-access-token &>/dev/null; then
-   undpbio="\Zu\Z1UNDPBIO"
-else
-   undpbio="UNDPBIO"
-fi
-
 export AZURE_CONFIG_DIR=$UNWOMEN_config_dir
 if az account get-access-token &>/dev/null; then
    unwomen="\Zu\Z1UNWOMEN"
 else
    unwomen="UNWOMEN"
+fi
+
+export AZURE_CONFIG_DIR=$UNDPBIO_config_dir
+if az account get-access-token &>/dev/null; then
+   undpbio="\Zu\Z1UNDPBIO"
+else
+   undpbio="UNDPBIO"
 fi
 
 tenant="$(dialog --colors --backtitle "Azure Bastion tunnel connection" --title "\Zb\Z0AZBASTION v.$VERSION" --stdout --default-item 1 --menu "Select Tenant" 0 0 6 \
@@ -70,14 +70,14 @@ case $tenant in
     if ! az account get-access-token &>/dev/null; then
       az login --tenant $UNWOMEN_tenant &>> /tmp/azbastion_$USER.log  
     fi
-    az account set --subscription 'UNWOMEN - Production';;
+    az account set --subscription 'UNICC';;
   4)
     export AZURE_CONFIG_DIR=$UNDPBIO_config_dir
         az config set extension.use_dynamic_install=yes_without_prompt &>/dev/null
     if ! az account get-access-token &>/dev/null; then
       az login --tenant $UNDPBIO_tenant &>> /tmp/azbastion_$USER.log
     fi
-    az account set --subscription 'UNDP - UN Biodiversity Lab Hosting - ELSA';;
+    az account set --subscription 'UNDP - UN Biodiversity Lab Hosting';;
 
 esac
 
@@ -191,10 +191,49 @@ if [[ $tenant == 2 ]] ; then
 fi
 ###############################################
 
-################## UNWOMEN ##################
+################## UNWOMEN ####################
+if [[ $tenant == 3 ]] ; then
+  bastion="UNWOMEN-EAST-US-bastion"
+  rg="UNWOMEN-EAST-US-Migrated"
+
+  environment="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Environment:" 0 0 5 \
+    1 "Production" \
+    2 "Test")"
+
+  if [[ $environment == 1 ]] ; then
+
+    server="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Server:" 0 0 10 \
+      1 "UNWMEUSSENBFWD01 - BUY FROM WOMEN" \
+      2 "UNWMEUSELPRDWEB01 - TRAINING CENTRE" \
+	  3 "UNWMEUSLMSP01 - WEPS")"
+
+    case $server in
+      1)
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.2.2.5 --resource-port 22 --port 9016 ;;
+      2)
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.88.135.164 --resource-port 22 --port 9017 ;;
+	  3) 
+	     az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.0.0.4 --resource-port 22 --port 9018 ;;
+    esac
+  fi
+
+  if [[ $environment == 2 ]] ; then
+
+   server="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Server:" 0 0 10 \
+     1 "UNWMEUSDEVBFWD01 - BUY FROM WOMEN" \
+	 2 "UNWMEUSLMSD01 - WEPS")"
+
+    case $server in
+      1)
+         az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.3.1.132 --resource-port 22 --port 9019 ;;
+	  2)
+	     az network bastion tunnel --name $bastion --resource-group $rg --target-ip-address 10.0.1.4 --resource-port 22 --port 9020 ;;
+    esac
+  fi
+fi
 ###############################################
 
-################## UNDP BIO ##################
+################## UNDP BIO ###################
 if [[ $tenant == 4 ]] ; then
   bastion="undp-elsa-bastion"
   rg="RG-undp-elsa-prod"
