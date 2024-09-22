@@ -90,7 +90,7 @@ case $tenant in
     if ! az account get-access-token &>/dev/null; then
       az login --tenant $UNDPBIO_tenant &>> /tmp/azbastion_$USER.log
     fi
-    az account set --subscription 'UNDP - UN Biodiversity Lab Hosting';;
+    az account set --subscription 'UNDP - UN Biodiversity Lab Hosting - ELSA';;
 
 esac
 
