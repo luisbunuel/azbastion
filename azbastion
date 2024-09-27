@@ -7,8 +7,8 @@ VERSION="1.1"
 azuser="admbunuel"
 
 if [ -z "$azuser" ]; then
-  echo "Error: The 'azuser' variable is not set. Please edit this script and set it."
-  exit 1 
+	echo "Error: The 'azuser' variable is not set. Please edit this script and set it."
+	exit 1 
 fi
 
 # LIST OF AZURE TENANTS
@@ -23,272 +23,264 @@ UNWOMEN_config_dir="$HOME/.azure_WOMEN"
 
 export AZURE_CONFIG_DIR=$IIIM_config_dir
 if az account get-access-token &>/dev/null; then
-   iiim="\Zu\Z1IIIM"
+	iiim="\Zu\Z1IIIM"
 else
-   iiim="IIIM"
+	iiim="IIIM"
 fi
 
 export AZURE_CONFIG_DIR=$UNDP_config_dir
 if az account get-access-token &>/dev/null; then
-   undp="\Zu\Z1UNDP"
+	undp="\Zu\Z1UNDP"
 else
-   undp="UNDP"
+	undp="UNDP"
 fi
 
 export AZURE_CONFIG_DIR=$UNWOMEN_config_dir
 if az account get-access-token &>/dev/null; then
-   unwomen="\Zu\Z1UNWOMEN"
+	unwomen="\Zu\Z1UNWOMEN"
 else
-   unwomen="UNWOMEN"
+	unwomen="UNWOMEN"
 fi
 
 export AZURE_CONFIG_DIR=$UNDPBIO_config_dir
 if az account get-access-token &>/dev/null; then
-   undpbio="\Zu\Z1UNDPBIO"
+	undpbio="\Zu\Z1UNDPBIO"
 else
-   undpbio="UNDPBIO"
+	undpbio="UNDPBIO"
 fi
 
 check_ssh() {
-   az extension list | grep name | grep ssh &>/dev/null
-   if [ $? -ne 0 ]; then
-      az extension add -n ssh
-   fi
+	az extension list | grep name | grep ssh &>/dev/null
+	if [ $? -ne 0 ]; then
+		az extension add -n ssh &>/dev/null
+	fi
 }
 
 tenant="$(dialog --colors --backtitle "Azure Bastion tunnel connection" --title "\Zb\Z0AZBASTION v.$VERSION" --stdout --default-item 1 --menu "Select Tenant" 0 0 6 \
-  1 "$iiim" \
-  2 "$undp" \
-  3 "$unwomen" \
-  4 "$undpbio" )"
+	1 "$iiim" \
+	2 "$undp" \
+	3 "$unwomen" \
+	4 "$undpbio" )"
 
 case $tenant in
-  1)
-    export AZURE_CONFIG_DIR=$IIIM_config_dir
-    az config set extension.use_dynamic_install=yes_without_prompt &>/dev/null
-    if ! az account get-access-token &>/dev/null; then
-      az login --tenant $IIIM_tenant &>> /tmp/azbastion_$USER.log
-    fi
-    az account set --subscription 'IIIM - Connectivity Hub';;
-  2)
-    export AZURE_CONFIG_DIR=$UNDP_config_dir
-    az config set extension.use_dynamic_install=yes_without_prompt &>/dev/null
-    if ! az account get-access-token &>/dev/null; then
-      az login --tenant $UNDP_tenant &>> /tmp/azbastion_$USER.log
-    fi
-    az account set --subscription 'ICCUNDP - Production';;
-  3) 
-    export AZURE_CONFIG_DIR=$UNWOMEN_config_dir
-    az config set extension.use_dynamic_install=yes_without_prompt &>/dev/null
-    if ! az account get-access-token &>/dev/null; then
-      az login --tenant $UNWOMEN_tenant &>> /tmp/azbastion_$USER.log  
-    fi
-    az account set --subscription 'UNICC';;
-  4)
-    export AZURE_CONFIG_DIR=$UNDPBIO_config_dir
-    az config set extension.use_dynamic_install=yes_without_prompt &>/dev/null
-    if ! az account get-access-token &>/dev/null; then
-      az login --tenant $UNDPBIO_tenant &>> /tmp/azbastion_$USER.log
-    fi
-    az account set --subscription 'UNDP - UN Biodiversity Lab Hosting - ELSA';;
-
+	1)
+		export AZURE_CONFIG_DIR=$IIIM_config_dir
+		az config set extension.use_dynamic_install=yes_without_prompt &>/dev/null
+		if ! az account get-access-token &>/dev/null; then
+			az login --tenant $IIIM_tenant &>> /tmp/azbastion_$USER.log
+		fi
+		az account set --subscription 'IIIM - Connectivity Hub'
+		check_ssh;;
+	2)
+		export AZURE_CONFIG_DIR=$UNDP_config_dir
+		az config set extension.use_dynamic_install=yes_without_prompt &>/dev/null
+		if ! az account get-access-token &>/dev/null; then
+			az login --tenant $UNDP_tenant &>> /tmp/azbastion_$USER.log
+		fi
+		az account set --subscription 'ICCUNDP - Production'
+		check_ssh;;
+	3) 
+		export AZURE_CONFIG_DIR=$UNWOMEN_config_dir
+		az config set extension.use_dynamic_install=yes_without_prompt &>/dev/null
+		if ! az account get-access-token &>/dev/null; then
+			az login --tenant $UNWOMEN_tenant &>> /tmp/azbastion_$USER.log  
+		fi
+		az account set --subscription 'UNICC'
+		check_ssh;;
+	4)
+		export AZURE_CONFIG_DIR=$UNDPBIO_config_dir
+		az config set extension.use_dynamic_install=yes_without_prompt &>/dev/null
+		if ! az account get-access-token &>/dev/null; then
+			az login --tenant $UNDPBIO_tenant &>> /tmp/azbastion_$USER.log
+		fi
+		az account set --subscription 'UNDP - UN Biodiversity Lab Hosting - ELSA'
+		check_ssh;;
 esac
 
 ################## IIIM MENU ##################
 if [[ $tenant == 1 ]] ; then
-  bastion="iiim-conn-dw-bastion"
-  rg="RG-IIIM-ConnHub-Datawalk"
-  check_ssh
+	bastion="iiim-conn-dw-bastion"
+	rg="RG-IIIM-ConnHub-Datawalk"
 
-  environment="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Environment:" 0 0 5 \
-    1 "Production" \
-    2 "Test")"
+	environment="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Environment:" 0 0 5 \
+		1 "Production" \
+		2 "Test")"
 
-  if [[ $environment == 1 ]] ; then
-  
-    server="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Server:" 0 0 10 \
-      1 "iiim-dw-p-appsrv-01" \
-      2 "iiim-dw-p-appsrv-02" \
-      3 "iiim-dw-p-intsrv-01" \
-      4 "iiim-dw-p-intsrv-02" \
-      5 "iiim-dw-p-compsrv-01" \
-      6 "iiim-dw-p-compsrv-02" \
-      7 "iiim-dw-p-compsrv-03" \
-      8 "iiim-dw-p-monsrv-01")"
+	if [[ $environment == 1 ]] ; then
+		server="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Server:" 0 0 10 \
+			1 "iiim-dw-p-appsrv-01" \
+			2 "iiim-dw-p-appsrv-02" \
+			3 "iiim-dw-p-intsrv-01" \
+			4 "iiim-dw-p-intsrv-02" \
+			5 "iiim-dw-p-compsrv-01" \
+			6 "iiim-dw-p-compsrv-02" \
+			7 "iiim-dw-p-compsrv-03" \
+			8 "iiim-dw-p-monsrv-01")"
 
-    case $server in
-      1)
-         clear
-         az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.62.4 --auth-type password --username $azuser ;;
-      2)
-         clear
-         az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.62.25 --auth-type password --username $azuser ;;
-      3)
-         clear
-         az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.62.36 --auth-type password --username $azuser ;;
-      4)
-         clear
-         az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.62.37 --auth-type password --username $azuser ;;
-      5)
-         clear
-         az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.62.68 --auth-type password --username $azuser ;;
-      6)
-         clear
-         az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.62.69 --auth-type password --username $azuser ;;
-      7)
-         clear
-         az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.62.70 --auth-type password --username $azuser ;;
-      8)
-         clear
-         az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.62.38 --auth-type password --username $azuser ;;
-    esac
-  fi
+		case $server in
+			1)
+				clear
+				az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.62.4 --auth-type password --username $azuser ;;
+			2)
+				clear
+				az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.62.25 --auth-type password --username $azuser ;;
+			3)
+				clear
+				az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.62.36 --auth-type password --username $azuser ;;
+			4)
+				clear
+				az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.62.37 --auth-type password --username $azuser ;;
+			5)
+				clear
+				az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.62.68 --auth-type password --username $azuser ;;
+			6)
+				clear
+				az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.62.69 --auth-type password --username $azuser ;;
+			7)
+				clear
+				az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.62.70 --auth-type password --username $azuser ;;
+			8)
+				clear
+				az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.62.38 --auth-type password --username $azuser ;;
+		esac
+	fi
 
-  if [[ $environment == 2 ]] ; then
+	if [[ $environment == 2 ]] ; then
+		server="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Server:" 0 0 10 \
+		1 "iiim-dw-t-appsrv-01" \
+		2 "iiim-dw-t-appsrv-02" \
+		3 "iiim-dw-t-intsrv-01" \
+		4 "iiim-dw-t-intsrv-02" \
+		5 "iiim-dw-t-compsrv-01" \
+		6 "iiim-dw-t-compsrv-02" \
+		7 "iiim-dw-t-compsrv-03")"
 
-   server="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Server:" 0 0 10 \
-     1 "iiim-dw-t-appsrv-01" \
-     2 "iiim-dw-t-appsrv-02" \
-     3 "iiim-dw-t-intsrv-01" \
-     4 "iiim-dw-t-intsrv-02" \
-     5 "iiim-dw-t-compsrv-01" \
-     6 "iiim-dw-t-compsrv-02" \
-     7 "iiim-dw-t-compsrv-03")"
-
-    case $server in
-      1)
-         clear
-         az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.61.4 --auth-type password --username $azuser ;;
-      2)
-         clear
-         az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.61.5 --auth-type password --username $azuser ;;
-      3)
-         clear
-         az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.61.36 --auth-type password --username $azuser ;;
-      4)
-         clear
-         az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.61.37 --auth-type password --username $azuser ;;
-      5)
-         clear
-         az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.61.68 --auth-type password --username $azuser ;;
-      6)
-         clear
-         az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.61.69 --auth-type password --username $azuser ;;
-      7)
-         clear
-         az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.61.70 --auth-type password --username $azuser ;;
-    esac
-  fi
+		case $server in
+			1)
+				clear
+				az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.61.4 --auth-type password --username $azuser ;;
+			2)
+				clear
+				az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.61.5 --auth-type password --username $azuser ;;
+			3)
+				clear
+				az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.61.36 --auth-type password --username $azuser ;;
+			4)
+				clear
+				az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.61.37 --auth-type password --username $azuser ;;
+			5)
+				clear
+				az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.61.68 --auth-type password --username $azuser ;;
+			6)
+				clear
+				az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.61.69 --auth-type password --username $azuser ;;
+			7)
+				clear
+				az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.61.70 --auth-type password --username $azuser ;;
+		esac
+	fi
 fi
 ###############################################
 
 ################## UNDP MENU ##################
 if [[ $tenant == 2 ]] ; then
-  bastion="UNDP-PRD-AZRWEU-BASTION-VNET-01"
-  rg="UNDP-PRD-AZRWEU-HUB"
-  check_ssh
+	bastion="UNDP-PRD-AZRWEU-BASTION-VNET-01"
+	rg="UNDP-PRD-AZRWEU-HUB"
 
-  environment="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Environment:" 0 0 5 \
-    1 "Production" \
-    2 "Test")"
+	environment="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Environment:" 0 0 5 \
+		1 "Production" \
+		2 "Test")"
 
-  if [[ $environment == 1 ]] ; then
+	if [[ $environment == 1 ]] ; then
+		server="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Server:" 0 0 10 \
+			1 "DPLPRODCF02" \
+			2 "DPSPRODCF02")"
 
-    server="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Server:" 0 0 10 \
-      1 "DPLPRODCF02" \
-      2 "DPSPRODCF02")"
+		case $server in
+			1)
+				clear
+				az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.1.46 --auth-type password --username $azuser ;;
+			2)
+				clear
+				az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.1.47 --auth-type password --username $azuser ;;
+		esac
+	fi
 
-    case $server in
-      1)
-         clear
-         az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.1.46 --auth-type password --username $azuser ;;
-      2)
-         clear
-         az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.1.47 --auth-type password --username $azuser ;;
-    esac
-  fi
+	if [[ $environment == 2 ]] ; then
+		server="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Server:" 0 0 10 \
+			1 "DPLNONPRODCF02")"
 
-  if [[ $environment == 2 ]] ; then
-
-   server="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Server:" 0 0 10 \
-     1 "DPLNONPRODCF02")"
-
-    case $server in
-      1)
-         clear
-         az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.1.42 --auth-type password --username $azuser ;;
-    esac
-  fi
+		case $server in
+			1)
+				clear
+				az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.1.42 --auth-type password --username $azuser ;;
+		esac
+	fi
 fi
 ###############################################
 
 ################## UNWOMEN ####################
 if [[ $tenant == 3 ]] ; then
-  bastion="UNWOMEN-EAST-US-bastion"
-  rg="UNWOMEN-EAST-US-Migrated"
-  check_ssh
+	bastion="UNWOMEN-EAST-US-bastion"
+	rg="UNWOMEN-EAST-US-Migrated"
 
-  environment="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Environment:" 0 0 5 \
-    1 "Production" \
-    2 "Test")"
+	environment="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Environment:" 0 0 5 \
+		1 "Production" \
+		2 "Test")"
 
-  if [[ $environment == 1 ]] ; then
+	if [[ $environment == 1 ]] ; then
+		server="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Server:" 0 0 10 \
+			1 "UNWMEUSSENBFWD01 - BUY FROM WOMEN" \
+			2 "UNWMEUSELPRDWEB01 - TRAINING CENTRE" \
+			3 "UNWMEUSLMSP01 - WEPS")"
 
-    server="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Server:" 0 0 10 \
-      1 "UNWMEUSSENBFWD01 - BUY FROM WOMEN" \
-      2 "UNWMEUSELPRDWEB01 - TRAINING CENTRE" \
-      3 "UNWMEUSLMSP01 - WEPS")"
+		case $server in
+			1)
+				clear
+				az network bastion ssh -n $bastion -g $rg --target-ip-address 10.2.2.5 --auth-type password --username $azuser ;;
+			2)
+				clear
+				az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.135.164 --auth-type password --username $azuser ;;
+			3) 
+				clear
+				az network bastion ssh -n $bastion -g $rg --target-ip-address 10.0.0.4 --auth-type password --username $azuser ;;
+		esac
+	fi
 
-    case $server in
-      1)
-         clear
-         az network bastion ssh -n $bastion -g $rg --target-ip-address 10.2.2.5 --auth-type password --username $azuser ;;
-      2)
-         clear
-         az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.135.164 --auth-type password --username $azuser ;;
-      3) 
-         clear
-         az network bastion ssh -n $bastion -g $rg --target-ip-address 10.0.0.4 --auth-type password --username $azuser ;;
-    esac
-  fi
+	if [[ $environment == 2 ]] ; then
+		server="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Server:" 0 0 10 \
+			1 "UNWMEUSDEVBFWD01 - BUY FROM WOMEN" \
+			2 "UNWMEUSLMSD01 - WEPS")"
 
-  if [[ $environment == 2 ]] ; then
-
-   server="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Server:" 0 0 10 \
-     1 "UNWMEUSDEVBFWD01 - BUY FROM WOMEN" \
-     2 "UNWMEUSLMSD01 - WEPS")"
-
-    case $server in
-      1)
-         clear
-         az network bastion ssh -n $bastion -g $rg --target-ip-address 10.3.1.132 --auth-type password --username $azuser ;;
-      2)
-         clear
-         az network bastion ssh -n $bastion -g $rg --target-ip-address 10.0.1.4 --auth-type password --username $azuser ;;
-    esac
-  fi
+		case $server in
+			1)
+				clear
+				az network bastion ssh -n $bastion -g $rg --target-ip-address 10.3.1.132 --auth-type password --username $azuser ;;
+			2)
+				clear
+				az network bastion ssh -n $bastion -g $rg --target-ip-address 10.0.1.4 --auth-type password --username $azuser ;;
+		esac
+	fi
 fi
 ###############################################
 
 ################## UNDP BIO ###################
 if [[ $tenant == 4 ]] ; then
-  bastion="undp-elsa-bastion"
-  rg="RG-undp-elsa-prod"
-  check_ssh
+	bastion="undp-elsa-bastion"
+	rg="RG-undp-elsa-prod"
 
-  environment="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Environment:" 0 0 5 \
-    1 "Production")"
+	environment="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Environment:" 0 0 5 \
+		1 "Production")"
 
-  if [[ $environment == 1 ]] ; then
+	if [[ $environment == 1 ]] ; then
+		server="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Server:" 0 0 10 \
+			1 "undpbio")"
 
-    server="$(dialog --backtitle "Azure Bastion tunnel connection" --stdout --default-item 1 --menu "Select Server:" 0 0 10 \
-      1 "undpbio")"
-
-    case $server in
-      1)
-         clear
-         az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.2.68 --auth-type password --username $azuser ;;
-    esac
-  fi
+		case $server in
+			1)
+				clear
+				az network bastion ssh -n $bastion -g $rg --target-ip-address 10.88.2.68 --auth-type password --username $azuser ;;
+		esac
+	fi
 fi
 ###############################################
