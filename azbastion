@@ -4,7 +4,9 @@
 # https://github.com/luisbunuel/aztools
 
 VERSION="1.1"
-azuser="admbunuel"
+
+# include user / users 
+source  myusers.sh
 
 if [ -z "$azuser" ]; then
 	echo "Error: The 'azuser' variable is not set. Please edit this script and set it."
